@@ -175,9 +175,7 @@ res %>%
 dev.off()
 
 png(str_glue("{outfile}.qq.png"), width = 800, height = 800, res = 120)
-  res %>%
-    filter(is.numeric(P)) %>%
-    qq(10^(-(res %>% filter(is.numeric(P)) %>% .$LOG10P)))
+  qq(10^(-(res %>% filter(is.numeric(P)) %>% .$P)))
 dev.off()
 
 #Running script on UGER
