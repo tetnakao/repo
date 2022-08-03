@@ -40,7 +40,7 @@ for(i in 1:length(h1[[1]])){
     filter(CHR == chr, BP > pos.start, BP < pos.end) %>% 
     .$SNP %>% 
     as.character()
-  h.id <- c(h.id, h3)
+  h.id <- c(h.id.manual, h3)
 }
 
 #auto detect the highlight
@@ -49,9 +49,16 @@ res.a <- res %>%
 h.id.auto <- NULL
 while(nrow(res.a)>=1){
     minp <- res.a[which.max(res.a$P),]
+    minp
+    minp$CHR[1]
+    minp$BP[1]
     res.a <- res.a %>%
-        filter(!(CHR == minp$CHR[1], BP > minp$BP[1]-500000, BP < minp$BP[1]+500000))
-    h.id.auto <- c(h.id.auto, minp$SNP)
+        filter(!(CHR == minp$CHR[1] & BP > minp$BP[1]-500000 & BP < minp$BP[1]+500000))
+    locus <- res %>%
+        filter(CHR == minp$CHR[1] & BP > minp$BP[1]-500000 & BP < minp$BP[1]+500000) %>%
+        .$SNP %>%
+        as.character()
+    h.id.auto <- c(h.id.auto, locus)
 }
 
 h.id <- c(h.id.manual, h.id.auto)
