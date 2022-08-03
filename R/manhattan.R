@@ -17,46 +17,66 @@ library(tidyverse)
 library(qqman)
 
 res <- fread(infile, fill=TRUE)
-res <- data.frame(CHR = res[[chr.col]],
-                  BP = res[[pos.col]],
-                  P = res[[p.col]],
+if(log.bl){
+    res <- data.frame(CHR = res[[chr.col]], 
+                  BP = res[[pos.col]], 
+                  P = -log10(res[[p.col]]), 
                   SNP = res[[snpid.col]])
+} else {
+    res <- data.frame(CHR = res[[chr.col]], 
+                  BP = res[[pos.col]], 
+                  P = res[[p.col]], 
+                  SNP = res[[snpid.col]])
+}
 
 h1 <- str_split(highlite, pattern = ",")
-h.id <- NULL
+h.id.manual <- NULL
 for(i in 1:length(h1[[1]])){
   h2 <- str_split(h1[[1]][i], pattern = ":")
   chr <- as.integer(h2[[1]][1])
   pos.start <- as.integer(h2[[1]][2])-500000
   pos.end <- as.integer(h2[[1]][2])+500000
-  h3 <- res %>%
-    filter(CHR == chr, BP > pos.start, BP < pos.end) %>%
-    .$SNP %>%
+  h3 <- res %>% 
+    filter(CHR == chr, BP > pos.start, BP < pos.end) %>% 
+    .$SNP %>% 
     as.character()
   h.id <- c(h.id, h3)
 }
 
-manhattan1 <- function (x, chr = "CHR", bp = "BP", p = "P", snp = "SNP", col = c("lightskyblue1", "lightskyblue3"), chrlabs = NULL,
-    genomewideline = -log10(5e-08), highlight = NULL, logp = TRUE,
-    annotatePval = NULL, annotateTop = TRUE, ...)
+#auto detect the highlight
+res.a <- res %>%
+    filter(P>7.30103)
+h.id.auto <- NULL
+while(nrow(res.a)>=1){
+    minp <- res.a[which.max(res.a$P),]
+    res.a <- res.a %>%
+        filter(!(CHR == minp$CHR[1], BP > minp$BP[1]-500000, BP < minp$BP[1]+500000))
+    h.id.auto <- c(h.id.auto, minp$SNP)
+}
+
+h.id <- c(h.id.manual, h.id.auto)
+
+manhattan1 <- function (x, chr = "CHR", bp = "BP", p = "P", snp = "SNP", col = c("lightskyblue1", "lightskyblue3"), chrlabs = NULL, 
+    genomewideline = -log10(5e-08), highlight = NULL, logp = FALSE, 
+    annotatePval = NULL, annotateTop = TRUE, ...) 
 {
     CHR = BP = P = index = NULL
-    if (!(chr %in% names(x)))
+    if (!(chr %in% names(x))) 
         stop(paste("Column", chr, "not found!"))
-    if (!(bp %in% names(x)))
+    if (!(bp %in% names(x))) 
         stop(paste("Column", bp, "not found!"))
-    if (!(p %in% names(x)))
+    if (!(p %in% names(x))) 
         stop(paste("Column", p, "not found!"))
-    if (!(snp %in% names(x)))
+    if (!(snp %in% names(x))) 
         warning(paste("No SNP column found. OK unless you're trying to highlight."))
-    if (!is.numeric(x[[chr]]))
+    if (!is.numeric(x[[chr]])) 
         stop(paste(chr, "column should be numeric. Do you have 'X', 'Y', 'MT', etc? If so change to numbers and try again."))
-    if (!is.numeric(x[[bp]]))
+    if (!is.numeric(x[[bp]])) 
         stop(paste(bp, "column should be numeric."))
-    if (!is.numeric(x[[p]]))
+    if (!is.numeric(x[[p]])) 
         stop(paste(p, "column should be numeric."))
     d = data.frame(CHR = x[[chr]], BP = x[[bp]], P = x[[p]])
-    if (!is.null(x[[snp]]))
+    if (!is.null(x[[snp]])) 
         d = transform(d, SNP = x[[snp]])
     d <- subset(d, (is.numeric(CHR) & is.numeric(BP) & is.numeric(P)))
     d <- d[order(d$CHR, d$BP), ]
@@ -88,12 +108,12 @@ manhattan1 <- function (x, chr = "CHR", bp = "BP", p = "P", snp = "SNP", col = c
                 d[d$index == i, ]$pos = d[d$index == i, ]$BP
             }
             else {
-                lastbase = lastbase + tail(subset(d, index ==
+                lastbase = lastbase + tail(subset(d, index == 
                   i - 1)$BP, 1)
-                d[d$index == i, ]$pos = d[d$index == i, ]$BP +
+                d[d$index == i, ]$pos = d[d$index == i, ]$BP + 
                   lastbase
             }
-            ticks = c(ticks, (min(d[d$index == i, ]$pos) + max(d[d$index ==
+            ticks = c(ticks, (min(d[d$index == i, ]$pos) + max(d[d$index == 
                 i, ]$pos))/2 + 1)
         }
         xlabel = "Chromosome"
@@ -101,11 +121,11 @@ manhattan1 <- function (x, chr = "CHR", bp = "BP", p = "P", snp = "SNP", col = c
     }
     xmax = ceiling(max(d$pos) * 1.03)
     xmin = floor(max(d$pos) * -0.03)
-    def_args <- list(xaxt = "n", bty = "n", xaxs = "i", yaxs = "i",
-        las = 1, pch = 20, xlim = c(xmin, xmax), ylim = c(0,
+    def_args <- list(xaxt = "n", bty = "n", xaxs = "i", yaxs = "i", 
+        las = 1, pch = 20, xlim = c(xmin, xmax), ylim = c(0, 
             ceiling(max(d$logp))), xlab = xlabel, ylab = expression(-log[10](italic(p))))
     dotargs <- list(...)
-    do.call("plot", c(NA, dotargs, def_args[!names(def_args) %in%
+    do.call("plot", c(NA, dotargs, def_args[!names(def_args) %in% 
         names(dotargs)]))
     if (!is.null(chrlabs)) {
         if (is.character(chrlabs)) {
@@ -133,26 +153,26 @@ manhattan1 <- function (x, chr = "CHR", bp = "BP", p = "P", snp = "SNP", col = c
     else {
         icol = 1
         for (i in unique(d$index)) {
-            with(d[d$index == unique(d$index)[i], ], points(pos,
+            with(d[d$index == unique(d$index)[i], ], points(pos, 
                 logp, col = col[icol], pch = 20, ...))
             icol = icol + 1
         }
     }
-    if (genomewideline)
+    if (genomewideline) 
         abline(h = genomewideline, col = "gray50", lty = "dashed", lwd = 2)
     if (!is.null(highlight)) {
-        if (any(!(highlight %in% d$SNP)))
+        if (any(!(highlight %in% d$SNP))) 
             warning("You're trying to highlight SNPs that don't exist in your results.")
         d.highlight = d[which(d$SNP %in% highlight), ]
-        with(d.highlight, points(pos, logp, col = "indianred1", pch = 20,
+        with(d.highlight, points(pos, logp, col = "indianred1", pch = 20, 
             ...))
     }
     if (!is.null(annotatePval)) {
         topHits = subset(d, P <= annotatePval)
         par(xpd = TRUE)
         if (annotateTop == FALSE) {
-            with(subset(d, P <= annotatePval), textxy(pos, -log10(P),
-                offset = 0.625, labs = topHits$SNP, cex = 0.45),
+            with(subset(d, P <= annotatePval), textxy(pos, -log10(P), 
+                offset = 0.625, labs = topHits$SNP, cex = 0.45), 
                 ...)
         }
         else {
@@ -162,7 +182,7 @@ manhattan1 <- function (x, chr = "CHR", bp = "BP", p = "P", snp = "SNP", col = c
                 chrSNPs <- topHits[topHits$CHR == i, ]
                 topSNPs <- rbind(topSNPs, chrSNPs[1, ])
             }
-            textxy(topSNPs$pos, -log10(topSNPs$P), offset = 0.625,
+            textxy(topSNPs$pos, -log10(topSNPs$P), offset = 0.625, 
                 labs = topSNPs$SNP, cex = 0.5, ...)
         }
     }
@@ -171,11 +191,11 @@ manhattan1 <- function (x, chr = "CHR", bp = "BP", p = "P", snp = "SNP", col = c
 
 png(str_glue("{outfile}.manhattan.png"), width = 1500, height = 800, res = 120)
 res %>%
-  manhattan1(suggestiveline = F, highlight = h.id, logp = log.bl)
+  manhattan1(suggestiveline = F, highlight = h.id)
 dev.off()
 
 png(str_glue("{outfile}.qq.png"), width = 800, height = 800, res = 120)
-  qq(10^(-(res %>% filter(is.numeric(P)) %>% .$P)))
+ qq(10^(-(res %>% filter(is.numeric(P)) %>% .$P)))
 dev.off()
 
 #Running script on UGER
