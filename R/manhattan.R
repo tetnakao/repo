@@ -47,6 +47,7 @@ for(i in 1:length(h1[[1]])){
 res.a <- res %>%
     filter(P>7.30103)
 h.id.auto <- NULL
+sentinels <- NULL
 while(nrow(res.a)>=1){
     minp <- res.a[which.max(res.a$P),]
     minp
@@ -59,6 +60,7 @@ while(nrow(res.a)>=1){
         .$SNP %>%
         as.character()
     h.id.auto <- c(h.id.auto, locus)
+    sentinels <- rbind(sentinels, minp)
 }
 
 h.id <- c(h.id.manual, h.id.auto)
@@ -205,6 +207,7 @@ png(str_glue("{outfile}.qq.png"), width = 800, height = 800, res = 120)
  qq(10^(-(res %>% filter(is.numeric(P)) %>% .$P)))
 dev.off()
 
+write.table(sentinels, str_glue("{outfile}.top.snps.1Mb.window.tsv"), sep = "\t", quote = F)
 #Running script on UGER
 #script=/medpop/esp2/tnakao/tools/script/manhattan.R
 #ss=result/07_sumstat/regenie_CAD_CHIP.10_gwis.inter.sumstat.txt
