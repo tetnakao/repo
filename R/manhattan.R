@@ -20,13 +20,19 @@ res <- fread(infile, fill=TRUE)
 if(log.bl){
     res <- data.frame(CHR = res[[chr.col]], 
                   BP = res[[pos.col]], 
-                  P = -log10(res[[p.col]]), 
-                  SNP = res[[snpid.col]])
+                  P = res[[p.col]], 
+                  SNP = res[[snpid.col]]) %>%
+	drop_na() %>%
+	filter(P != "NA") %>%
+	mutate(P = -log10(as.numeric(P)))
 } else {
     res <- data.frame(CHR = res[[chr.col]], 
                   BP = res[[pos.col]], 
                   P = res[[p.col]], 
-                  SNP = res[[snpid.col]])
+                  SNP = res[[snpid.col]]) %>%
+	drop_na() %>%
+	filter(P != "NA") %>%
+	mutate(P = as.numeric(P))
 }
 
 h1 <- str_split(highlite, pattern = ",")
