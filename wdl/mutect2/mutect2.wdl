@@ -109,7 +109,7 @@ workflow Mutect2 {
         # runtime
         String gatk_docker
         File? gatk_override
-        String basic_bash_docker = "ubuntu:16.04"
+        #String basic_bash_docker = "ubuntu:16.04"
         Int scatter_count
         Int preemptible = 2
         Int max_retries = 1
