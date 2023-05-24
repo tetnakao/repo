@@ -122,7 +122,7 @@ ggforest.facet <- function(data,
            lo.label = formatC(lo, format = "fg", digits = 2),
            hi.label = formatC(hi, format = "fg", digits = 2),
            se.label = str_glue("[{lo.label}:{hi.label}]"),
-           p.label = prettyNum(p, digits = 2),
+           p.label = prettyNum(p, digits = 2) %>% str_replace("e", " × 10")),
            title.length = nchar(as.character(variable))) %>%
     transform(variable = factor(variable, levels = rev(.$variable %>% unique)))
   

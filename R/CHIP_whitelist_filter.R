@@ -240,4 +240,4 @@ write.csv(varsOI.func,paste(sample_id, ".annovar.varsOI.allvariants.csv", sep=""
 write.csv(varsOI.func[whitelist==T,],paste(sample_id, ".annovar.varsOI.wl.csv", sep=""), row.names=FALSE)
 write.csv(varsOI.func[manualreview==T,],paste(sample_id, ".annovar.varsOI.manualreview.csv", sep=""), row.names=FALSE)
 write.csv(varsOI.func[Accession=="NM_022552"&ExonicFunc.refGene=="nonsynonymous SNV"&!whitelist,],
-          paste0(sample_id,".annovar.varsOI.DNMT3Amis.notwl.tsv", sep = ""), row.names=FALSE)
+          paste0(sample_id,".annovar.varsOI.DNMT3Amis.notwl.csv", sep = ""), row.names=FALSE)
