@@ -86,13 +86,13 @@ ggforest <- function(data,
   }
 
     p.dat <- p.dat %>%
-        mutate(b.label = formatC(beta, digits = 2),
-                 lo.label = signif(lo, digits = 2),
-                 hi.label = signif(hi, digits = 2),
-                 se.label = str_glue("[{lo.label}:{hi.label}]"),
-                 p.label = formatC(p, digits = 2),
-                 title.length = nchar(as.character(variable))) %>%
-        transform(variable = factor(variable, levels = rev(.$variable)))
+      mutate(b.label = formatC(beta, format = "fg", digits = 2),
+             lo.label = formatC(lo, format = "fg", digits = 2),
+             hi.label = formatC(hi, format = "fg", digits = 2),
+             se.label = str_glue("[{lo.label}:{hi.label}]"),
+             p.label = prettyNum(p, digits = 2) %>% str_replace("e", " × 10") %>% str_replace("-0", "-"),
+             title.length = nchar(as.character(variable))) %>%
+      transform(variable = factor(variable, levels = rev(.$variable)))
 
   #adjust size of the elements
   x.min <- min(p.dat$lo) - (max(p.dat$hi) - min(p.dat$lo))/10
