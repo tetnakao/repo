@@ -82,7 +82,16 @@ ggforest <- function(data,
   	                           	        		p = {p},
                                             one_of(left.table)
   	                           	        )")))
-    
+
+    if(OR|HR){
+      
+      p.dat <- p.dat %>%
+        mutate(lo = exp(lo),
+               hi = exp(hi),
+               beta = exp(beta))
+      
+    }
+
   }
 
     p.dat <- p.dat %>%
