@@ -115,6 +115,16 @@ ggforest.facet <- function(data,
                                           one_of(facet),
                                           one_of(meta)
 	                           	        )")))
+
+    if(OR|HR){
+      
+      p.dat <- p.dat %>%
+        mutate(lo = exp(lo),
+               hi = exp(hi),
+               beta = exp(beta))
+      
+    }
+
   }
   
   p.dat <- p.dat %>%
@@ -122,7 +132,7 @@ ggforest.facet <- function(data,
            lo.label = formatC(lo, format = "fg", digits = 2),
            hi.label = formatC(hi, format = "fg", digits = 2),
            se.label = str_glue("[{lo.label}:{hi.label}]"),
-           p.label = prettyNum(p, digits = 2) %>% str_replace("e", " × 10"),
+           p.label = prettyNum(p, digits = 2) %>% str_replace("e", " × 10") %>% str_replace("-0", "-"),
            title.length = nchar(as.character(variable))) %>%
     transform(variable = factor(variable, levels = rev(.$variable %>% unique)))
   
@@ -196,10 +206,6 @@ ggforest.facet <- function(data,
     tb <- plot.partial.table(data = p.dat, variable = "b.label", title = "β", italic = T, color = text_color_dummy, manual_color = manual_color)
     
   }
-  
-  p <- p +
-    geom_vline(xintercept = 0, linetype = "dashed", color = "grey")+
-    geom_errorbarh(aes(xmin = lo, xmax = hi), height = 0.1, color = "grey")
   
   eval(parse(text = str_glue("
       p <- p +
