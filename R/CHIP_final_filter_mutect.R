@@ -3,7 +3,6 @@ file = commandArgs(trailingOnly = TRUE)[1]
 library(tidyverse)
 
 data.table::fread(file, data.table = F) %>%
-	separate(`Sample_ID	"Gene.refGene"`, into = c("Sample_ID", "Gene.refGene"), remove = T, sep = '"') %>%
   	separate(Otherinfo13, into = c("GT","AD_Ref", "AD_Alt","AF","DP","F1R2_Ref","F1R2_Alt","F2R1_Ref","F2R1_Alt"), remove = F, sep = "[:,]") %>% 
     dplyr::rename(FILTER = Otherinfo10,
                   INFO = Otherinfo11) %>% 
