@@ -116,15 +116,6 @@ ggforest.facet <- function(data,
                                           one_of(meta)
 	                           	        )")))
 
-    if(OR|HR){
-      
-      p.dat <- p.dat %>%
-        mutate(lo = exp(lo),
-               hi = exp(hi),
-               beta = exp(beta))
-      
-    }
-
   }
   
   p.dat <- p.dat %>%
