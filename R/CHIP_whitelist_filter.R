@@ -87,7 +87,7 @@ varsOI.func[(vSplice&vSplicegene) & (!vSpliceCorrectTranscript),"manualreview"]=
 #4) Handle the following exceptions
 #ASXL1	Frameshift/nonsense/splice-site in exon 11-12
 #LoF
-vlof<-grepl("X|\\*",varsOI.func$NonsynOI, fixed=T) #stop gain or stop loss
+vlof<-grepl("X|\\*",varsOI.func$NonsynOI) #stop gain or stop loss
 vFS<-grepl("fs",varsOI.func$NonsynOI, fixed=T) #frameshift
 vexon11<-grepl("exon11",varsOI.func$transcriptOI, fixed=T)
 vexon12<-grepl("exon12",varsOI.func$transcriptOI, fixed=T)
@@ -124,7 +124,7 @@ varsOI.func[asxl2ExceptionSplice,"wl.exception"]=T
 
 
 #PPM1D	Frameshift/nonsense in exon 5 or 6
-vlof<-grepl("X|\\*",varsOI.func$NonsynOI, fixed=T) #stop gain or stop loss
+vlof<-grepl("X|\\*",varsOI.func$NonsynOI) #stop gain or stop loss
 vFS<-grepl("fs",varsOI.func$NonsynOI, fixed=T) #frameshift
 vexon5<-grepl("exon5",varsOI.func$transcriptOI, fixed=T)
 vexon6<-grepl("exon6",varsOI.func$transcriptOI, fixed=T)
@@ -177,7 +177,7 @@ for(i in CBLBidx){
 
 #5) flag remaining exceptions for manual review
 
-vlof<-grepl("X|\\*",varsOI.func$NonsynOI, fixed=T) #stop gain or stop loss
+vlof<-grepl("X|\\*",varsOI.func$NonsynOI) #stop gain or stop loss
 vFS<-grepl("fs",varsOI.func$NonsynOI, fixed=T) #frameshift
 vSplice<-grepl("splicing",varsOI.func$Func.refGene)
 
